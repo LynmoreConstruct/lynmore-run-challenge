@@ -1,0 +1,639 @@
+<title>Lynmore Run Challenge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<style>
+/* Layout: a split scoreboard (Ned in gold, the three in cream) joined by a tug bar,
+   then one quiet column: race chart, runners, log a run, run log. */
+:root {
+  color-scheme: dark;
+  --ground: #0B0B0A;
+  --panel: #151513;
+  --raised: #1F1E1A;
+  --line: #2C2B26;
+  --ink: #F4F0E1;
+  --ink-2: #B9B3A0;
+  --ink-3: #8A8573;
+  --gold: #BC9C22;
+  --on-gold: #0B0B0A;
+  --ned: #BC9C22;
+  --rest: #EFE7C7;
+  --bad: #E8876D;
+  --font: "Poppins", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --ground: #F7F5EE;
+    --panel: #FFFFFF;
+    --raised: #F0ECDD;
+    --line: #DDD7C3;
+    --ink: #12120F;
+    --ink-2: #4F4B3C;
+    --ink-3: #6E6955;
+    --ned: #8B7319;
+    --rest: #1A1A18;
+    --bad: #A63A1E;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ground: #F7F5EE;
+  --panel: #FFFFFF;
+  --raised: #F0ECDD;
+  --line: #DDD7C3;
+  --ink: #12120F;
+  --ink-2: #4F4B3C;
+  --ink-3: #6E6955;
+  --ned: #8B7319;
+  --rest: #1A1A18;
+  --bad: #A63A1E;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-inline: 20px;
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 880px; margin-inline: auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, p { margin: 0; }
+.eyebrow { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: flex-end; }
+.top-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+h1 { font-size: clamp(1.9rem, 6vw, 2.9rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+.terms { color: var(--ink-2); max-width: 46ch; }
+.day { display: flex; flex-direction: column; gap: 2px; }
+.day-n { font-size: 1.15rem; font-weight: 600; }
+.day-sub { font-size: 0.85rem; color: var(--ink-3); }
+
+/* Scoreboard */
+.score { display: flex; flex-direction: column; gap: 16px; }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
+.side { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.side.rest { text-align: right; align-items: flex-end; }
+.side-name { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+.side-km { font-size: clamp(2.7rem, 12vw, 6.2rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.side.ned .side-km { color: var(--ned); }
+.side.rest .side-km { color: var(--rest); }
+.side-km small { font-size: 0.24em; font-weight: 500; letter-spacing: 0; margin-left: 0.35em; color: var(--ink-3); }
+.side-sub { font-size: 0.85rem; color: var(--ink-3); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; display: inline-block; }
+.dot.ned { background: var(--ned); }
+.dot.rest { background: var(--rest); }
+.tug { display: flex; gap: 2px; height: 12px; }
+.tug i { display: block; min-width: 6px; flex: 1 1 0; transition: flex-grow 0.5s ease; }
+.tug .ned { background: var(--ned); border-radius: 4px 0 0 4px; }
+.tug .rest { background: var(--rest); border-radius: 0 4px 4px 0; }
+.tug.empty i { background: var(--line); }
+.verdict { font-size: clamp(1.15rem, 3.6vw, 1.5rem); font-weight: 600; line-height: 1.25; text-wrap: balance; }
+.pace { color: var(--ink-2); max-width: 60ch; }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+h2 { font-size: 1.05rem; font-weight: 600; }
+.sec-head { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; align-items: baseline; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.85rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+
+/* Chart */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { font-family: var(--font); }
+.tip {
+  position: absolute; top: 8px; pointer-events: none; z-index: 2;
+  background: var(--raised); border: 1px solid var(--line); border-radius: 6px;
+  padding: 8px 10px; font-size: 0.8rem; line-height: 1.45; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tip b { font-weight: 600; display: block; }
+.tip span { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tip em { font-style: normal; color: var(--ink); margin-left: auto; padding-left: 12px; }
+
+/* Runners */
+.runners { display: flex; flex-direction: column; gap: 22px; }
+.grp { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.row .nm { font-weight: 600; }
+.row .meta { color: var(--ink-3); font-size: 0.85rem; min-width: 0; }
+.row .km { margin-left: auto; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.row.member { padding-left: 20px; }
+.row.member .nm, .row.member .km { font-weight: 400; }
+.row .dot { align-self: center; }
+.bar { display: flex; gap: 2px; height: 8px; background: var(--raised); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; flex: none; }
+.bar .ned { background: var(--ned); }
+.bar .rest { background: var(--rest); }
+
+.how { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); }
+.how p { max-width: 65ch; }
+
+/* Form */
+.form {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 20px; display: flex; flex-direction: column; gap: 16px;
+}
+.who { display: flex; flex-wrap: wrap; gap: 8px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.who legend, .field label { font-size: 0.8rem; font-weight: 500; color: var(--ink-2); padding: 0; margin-bottom: 6px; display: block; }
+.who input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.who label {
+  border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  font-weight: 500; color: var(--ink-2); background: var(--ground); user-select: none;
+}
+.who label:hover { color: var(--ink); border-color: var(--ink-3); }
+.who input:checked + label { background: var(--gold); color: var(--on-gold); border-color: var(--gold); }
+.who input:focus-visible + label { outline: 2px solid var(--ned); outline-offset: 2px; }
+.fields { display: grid; grid-template-columns: 150px 170px 1fr; gap: 12px; }
+.field { min-width: 0; }
+.field input {
+  width: 100%; font: inherit; color: var(--ink); background: var(--ground);
+  border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; min-height: 42px;
+}
+.field input:focus-visible, button:focus-visible { outline: 2px solid var(--ned); outline-offset: 2px; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+button { font: inherit; cursor: pointer; }
+.primary {
+  background: var(--gold); color: var(--on-gold); border: 0; border-radius: 6px;
+  padding: 10px 22px; font-weight: 600; min-height: 42px;
+}
+.primary:hover { filter: brightness(1.08); }
+.primary:disabled { opacity: 0.5; cursor: default; filter: none; }
+.msg { font-size: 0.9rem; color: var(--ink-2); min-width: 0; }
+.msg.err { color: var(--bad); }
+.notice { font-size: 0.9rem; color: var(--ink-2); border-left: 3px solid var(--gold); padding-left: 12px; }
+
+/* Log */
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.log li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 11px 0; border-top: 1px solid var(--line); min-width: 0; }
+.log .when { color: var(--ink-3); font-size: 0.85rem; width: 86px; flex: none; }
+.log .who-n { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+.log .note { color: var(--ink-3); font-size: 0.85rem; min-width: 0; overflow-wrap: anywhere; }
+.log .end { margin-left: auto; display: inline-flex; align-items: center; gap: 12px; }
+.log .km { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.link { background: none; border: 0; padding: 4px 2px; color: var(--ink-3); font-size: 0.82rem; text-decoration: underline; text-underline-offset: 3px; }
+.link:hover { color: var(--ink); }
+.link.danger { color: var(--bad); }
+.empty { color: var(--ink-3); padding: 11px 0; border-top: 1px solid var(--line); }
+
+@media (max-width: 620px) {
+  .fields { grid-template-columns: 1fr 1fr; }
+  .fields .wide { grid-column: 1 / -1; }
+  .form { padding: 16px; }
+  .row .meta { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .tug i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-main">
+      <p class="eyebrow">Lynmore Construct running challenge</p>
+      <h1>Ned vs the rest</h1>
+      <p class="terms">Most kilometres run between 5 October and 2 November 2026. Ned has to beat Ryan McCracken, Ryan McPherson and Nic combined.</p>
+    </div>
+    <div class="day">
+      <span class="day-n" id="dayN"></span>
+      <span class="day-sub" id="daySub"></span>
+      <span class="day-sub" id="updated"></span>
+    </div>
+  </header>
+
+  <div class="score" role="group" aria-label="Scoreboard">
+    <div class="sides">
+      <div class="side ned">
+        <p class="side-name"><span class="dot ned"></span>Ned</p>
+        <p class="side-km"><span id="nedKm">0.0</span><small>km</small></p>
+        <p class="side-sub" id="nedSub"></p>
+      </div>
+      <div class="side rest">
+        <p class="side-name">Ryan, Ryan and Nic<span class="dot rest"></span></p>
+        <p class="side-km"><span id="restKm">0.0</span><small>km</small></p>
+        <p class="side-sub" id="restSub"></p>
+      </div>
+    </div>
+    <div class="tug empty" id="tug" aria-hidden="true"><i class="ned" id="tugNed"></i><i class="rest" id="tugRest"></i></div>
+    <p class="verdict" id="verdict" aria-live="polite"></p>
+    <p class="pace" id="pace"></p>
+  </div>
+
+  <section aria-labelledby="hChart">
+    <div class="sec-head">
+      <h2 id="hChart">Running total, day by day</h2>
+      <div class="legend"><span><i class="dot ned"></i>Ned</span><span><i class="dot rest"></i>Ryan, Ryan and Nic combined</span></div>
+    </div>
+    <div class="chart" id="chart"><div class="tip" id="tip" hidden></div></div>
+  </section>
+
+  <section aria-labelledby="hRunners">
+    <h2 id="hRunners">Who has run what</h2>
+    <div class="runners" id="runners"></div>
+  </section>
+
+  <section aria-labelledby="hForm">
+    <h2 id="hForm">How to log a run</h2>
+    <div class="how">
+      <p>Email Ryan McCracken with "Run challenge" in the subject line and the distance in km in the body. If the run was on a different day to the email, say which day. One run per line if you are sending a few at once.</p>
+      <p>Emails are picked up at 7am and 5pm each day and the board updates itself a few minutes later. Only runs from 5 October to 2 November count.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="hLog">
+    <div class="sec-head">
+      <h2 id="hLog">Run log</h2>
+      <button class="link" id="showAll" type="button" hidden></button>
+    </div>
+    <ul class="log" id="log"></ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var START = Date.UTC(2026, 9, 5), DAYS = 29, LAST = DAYS - 1, DAY_MS = 86400000;
+  var RUNNERS = [
+    { id: 'ned', name: 'Ned', side: 'ned' },
+    { id: 'ryan-mcc', name: 'Ryan McCracken', side: 'rest' },
+    { id: 'ryan-mcp', name: 'Ryan McPherson', side: 'rest' },
+    { id: 'nic', name: 'Nic', side: 'rest' }
+  ];
+  var BY_ID = {};
+  RUNNERS.forEach(function (r) { BY_ID[r.id] = r; });
+  var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var LOG_SHORT = 12;
+
+  var db = null, runs = [], loaded = false, failed = false, canLog = false, updatedAt = '';
+  var pendingRemove = null, showAll = false, lastToday = '', hoverIdx = null;
+
+  function $(id) { return document.getElementById(id); }
+  function h(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function svg(tag, attrs, text) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  /* Dates. The challenge runs on Melbourne time. */
+  function todayStr() {
+    try {
+      var parts = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+      var o = {};
+      parts.forEach(function (p) { o[p.type] = p.value; });
+      return o.year + '-' + o.month + '-' + o.day;
+    } catch (e) {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+  }
+  function idxOf(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+    if (!m) return NaN;
+    return Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - START) / DAY_MS);
+  }
+  function isoOf(idx) { return new Date(START + idx * DAY_MS).toISOString().slice(0, 10); }
+  function dayLabel(idx, withWeekday) {
+    var d = new Date(START + idx * DAY_MS);
+    return (withWeekday ? WD[d.getUTCDay()] + ' ' : '') + d.getUTCDate() + ' ' + MO[d.getUTCMonth()];
+  }
+
+  function fmtUpdated(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    try { return new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }).format(d); }
+    catch (e) { return d.toLocaleString(); }
+  }
+  function km1(n) { return (Math.round(n * 10) / 10).toFixed(1); }
+  function kmRun(n) { var r = Math.round(n * 100) / 100; return r % 1 === 0 ? r.toFixed(1) : String(r); }
+  function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+
+  /* Rows come from other people's browsers, so check every field before using it. */
+  function clean(d) {
+    if (!d || typeof d !== 'object' || !BY_ID[d.runner]) return null;
+    var km = Number(d.km), idx = idxOf(String(d.date));
+    if (!isFinite(km) || km <= 0 || km > 100) return null;
+    if (!(idx >= 0 && idx <= LAST)) return null;
+    return {
+      id: String(d.id || ''), runner: d.runner, km: Math.round(km * 100) / 100, idx: idx,
+      note: typeof d.note === 'string' ? d.note.slice(0, 60) : '',
+      at: typeof d.at === 'string' ? d.at : ''
+    };
+  }
+
+  function tally() {
+    var per = {}, nedDay = [], restDay = [], i;
+    RUNNERS.forEach(function (r) { per[r.id] = { km: 0, runs: 0, longest: 0 }; });
+    for (i = 0; i < DAYS; i++) { nedDay.push(0); restDay.push(0); }
+    var maxIdx = -1;
+    runs.forEach(function (r) {
+      var p = per[r.runner];
+      p.km += r.km; p.runs += 1; if (r.km > p.longest) p.longest = r.km;
+      (BY_ID[r.runner].side === 'ned' ? nedDay : restDay)[r.idx] += r.km;
+      if (r.idx > maxIdx) maxIdx = r.idx;
+    });
+    var nedCum = [], restCum = [], a = 0, b = 0;
+    for (i = 0; i < DAYS; i++) { a += nedDay[i]; b += restDay[i]; nedCum.push(Math.round(a * 100) / 100); restCum.push(Math.round(b * 100) / 100); }
+    var restRuns = 0;
+    RUNNERS.forEach(function (r) { if (r.side === 'rest') restRuns += per[r.id].runs; });
+    return { per: per, ned: nedCum[LAST], rest: restCum[LAST], nedCum: nedCum, restCum: restCum, restRuns: restRuns, maxIdx: maxIdx };
+  }
+
+  /* Scoreboard */
+  function renderScore(t, today) {
+    var started = today >= 0, finished = today > LAST;
+    if (!started) { $('dayN').textContent = 'Starts 5 October'; $('daySub').textContent = plural(-today, 'day') + ' to go'; }
+    else if (finished) { $('dayN').textContent = 'Challenge finished'; $('daySub').textContent = 'Closed 2 November'; }
+    else {
+      $('dayN').textContent = 'Day ' + (today + 1) + ' of ' + DAYS;
+      $('daySub').textContent = today === LAST ? 'Final day' : plural(LAST - today, 'day') + ' left after today';
+    }
+
+    $('nedKm').textContent = km1(t.ned);
+    $('restKm').textContent = km1(t.rest);
+    $('nedSub').textContent = plural(t.per.ned.runs, 'run');
+    $('restSub').textContent = plural(t.restRuns, 'run') + ' between them';
+
+    var tug = $('tug'), none = t.ned === 0 && t.rest === 0;
+    tug.classList.toggle('empty', none);
+    $('tugNed').style.flexGrow = none ? 1 : Math.max(t.ned, 0.0001);
+    $('tugRest').style.flexGrow = none ? 1 : Math.max(t.rest, 0.0001);
+
+    var gap = Math.round(Math.abs(t.ned - t.rest) * 100) / 100, nedAhead = t.ned > t.rest;
+    var verdict, pace = '';
+    if (!loaded) verdict = failed ? 'Could not load the scores. Check your connection and reload.' : 'Loading the scores.';
+    else if (none) verdict = finished ? 'No runs were logged.' : 'No kilometres on the board yet.';
+    else if (gap === 0) verdict = finished ? 'Finished dead level at ' + km1(t.ned) + ' km.' : 'Dead level at ' + km1(t.ned) + ' km each.';
+    else if (finished) verdict = (nedAhead ? 'Ned won by ' : 'Ryan, Ryan and Nic won by ') + km1(gap) + ' km.';
+    else verdict = (nedAhead ? 'Ned leads by ' : 'Ryan, Ryan and Nic lead by ') + km1(gap) + ' km.';
+
+    if (none && !finished) pace = 'The first run logged below takes the lead.';
+    else if (!finished && started && gap > 0) {
+      var left = DAYS - today;
+      pace = 'To draw level, ' + (nedAhead ? 'the three have to outrun Ned' : 'Ned has to outrun the three') +
+        ' by ' + km1(gap / left) + ' km a day over ' + (left === 1 ? 'the final day.' : 'the ' + left + ' days left, today included.');
+    }
+    $('verdict').textContent = verdict;
+    $('pace').textContent = pace;
+    $('pace').hidden = !pace;
+  }
+
+  /* Chart: cumulative km for each side, one shared axis. */
+  function niceScale(max) {
+    var raw = Math.max(max, 10) / 4, pow = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / pow;
+    var step = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * pow;
+    return { step: step, max: Math.ceil(Math.max(max, 10) / step) * step };
+  }
+  var geo = null;
+  function renderChart(t, today) {
+    var box = $('chart'), W = box.clientWidth;
+    if (!W) return;
+    var old = box.querySelector('svg');
+    if (old) old.remove();
+    var H = W < 520 ? 230 : 290, m = { t: 14, r: 116, b: 30, l: 38 };
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var sc = niceScale(Math.max(t.ned, t.rest));
+    var last = Math.max(Math.min(today, LAST), t.maxIdx);
+    function X(i) { return m.l + (i / LAST) * pw; }
+    function Y(v) { return m.t + ph - (v / sc.max) * ph; }
+
+    var s = svg('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, role: 'img',
+      'aria-label': 'Cumulative kilometres. Ned ' + km1(t.ned) + ' km, Ryan, Ryan and Nic ' + km1(t.rest) + ' km.' });
+
+    for (var v = 0; v <= sc.max + 1e-9; v += sc.step) {
+      s.appendChild(svg('line', { x1: m.l, x2: m.l + pw, y1: Y(v), y2: Y(v), stroke: 'var(--line)', 'stroke-width': 1 }));
+      s.appendChild(svg('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--ink-3)' }, String(Math.round(v * 10) / 10)));
+    }
+    for (var d = 0; d <= LAST; d += 7) {
+      s.appendChild(svg('line', { x1: X(d), x2: X(d), y1: m.t + ph, y2: m.t + ph + 5, stroke: 'var(--line)', 'stroke-width': 1 }));
+      s.appendChild(svg('text', { x: X(d), y: H - 8, 'text-anchor': d === 0 ? 'start' : 'middle', 'font-size': 11, fill: 'var(--ink-3)' }, dayLabel(d)));
+    }
+
+    if (last < 0 || !runs.length) {
+      s.appendChild(svg('text', { x: m.l + pw / 2, y: m.t + ph / 2, 'text-anchor': 'middle', 'font-size': 13, fill: 'var(--ink-3)' }, 'The race line starts with the first run.'));
+      box.insertBefore(s, box.firstChild);
+      geo = null;
+      return;
+    }
+
+    function path(cum) {
+      var p = '';
+      for (var i = 0; i <= last; i++) p += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(cum[i]).toFixed(1);
+      return p;
+    }
+    var series = [
+      { key: 'rest', label: 'The three', cum: t.restCum, color: 'var(--rest)' },
+      { key: 'ned', label: 'Ned', cum: t.nedCum, color: 'var(--ned)' }
+    ];
+    series.forEach(function (q) {
+      if (last > 0) s.appendChild(svg('path', { d: path(q.cum), fill: 'none', stroke: q.color, 'stroke-width': 2.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    });
+
+    /* End markers with direct labels, nudged apart when the two sides are close. */
+    var yN = Y(t.nedCum[last]), yR = Y(t.restCum[last]), lyN = yN, lyR = yR;
+    if (Math.abs(yN - yR) < 16) {
+      var mid = (yN + yR) / 2, nedUp = t.nedCum[last] >= t.restCum[last];
+      lyN = mid + (nedUp ? -8 : 8); lyR = mid + (nedUp ? 8 : -8);
+    }
+    function clampY(y) { return Math.max(m.t + 4, Math.min(m.t + ph + 2, y)); }
+    series.forEach(function (q) {
+      var y = q.key === 'ned' ? yN : yR, ly = clampY(q.key === 'ned' ? lyN : lyR);
+      s.appendChild(svg('circle', { cx: X(last), cy: y, r: 5, fill: q.color, stroke: 'var(--ground)', 'stroke-width': 2 }));
+      var tx = svg('text', { x: X(last) + 11, y: ly + 4, 'font-size': 12, fill: 'var(--ink-2)' }, q.label + ' ');
+      var val = svg('tspan', { fill: 'var(--ink)', 'font-weight': 600 }, km1(q.cum[last]));
+      tx.appendChild(val);
+      s.appendChild(tx);
+    });
+
+    /* Hover layer: crosshair and markers drawn on demand. */
+    var hair = svg('line', { y1: m.t, y2: m.t + ph, stroke: 'var(--ink-3)', 'stroke-width': 1, 'stroke-dasharray': '3 3', visibility: 'hidden' });
+    var hn = svg('circle', { r: 4, fill: 'var(--ned)', stroke: 'var(--ground)', 'stroke-width': 2, visibility: 'hidden' });
+    var hr = svg('circle', { r: 4, fill: 'var(--rest)', stroke: 'var(--ground)', 'stroke-width': 2, visibility: 'hidden' });
+    s.appendChild(hair); s.appendChild(hr); s.appendChild(hn);
+    var hit = svg('rect', { x: m.l - 10, y: m.t, width: pw + 20, height: ph + m.b, fill: 'transparent' });
+    s.appendChild(hit);
+    box.insertBefore(s, box.firstChild);
+    geo = { s: s, X: X, Y: Y, m: m, pw: pw, W: W, last: last, hair: hair, hn: hn, hr: hr, t: t };
+
+    function move(ev) {
+      var r = s.getBoundingClientRect();
+      var i = Math.round(((ev.clientX - r.left) - m.l) / pw * LAST);
+      showHover(Math.max(0, Math.min(last, i)));
+    }
+    hit.addEventListener('pointermove', move);
+    hit.addEventListener('pointerdown', move);
+    hit.addEventListener('pointerleave', hideHover);
+    if (hoverIdx != null) showHover(Math.min(hoverIdx, last));
+  }
+  function showHover(i) {
+    if (!geo) return;
+    hoverIdx = i;
+    var g = geo, x = g.X(i), n = g.t.nedCum[i], r = g.t.restCum[i];
+    g.hair.setAttribute('x1', x); g.hair.setAttribute('x2', x); g.hair.setAttribute('visibility', 'visible');
+    g.hn.setAttribute('cx', x); g.hn.setAttribute('cy', g.Y(n)); g.hn.setAttribute('visibility', 'visible');
+    g.hr.setAttribute('cx', x); g.hr.setAttribute('cy', g.Y(r)); g.hr.setAttribute('visibility', 'visible');
+    var tip = $('tip');
+    tip.textContent = '';
+    tip.appendChild(h('b', null, dayLabel(i, true)));
+    [['ned', 'Ned', n], ['rest', 'The three', r]].forEach(function (row) {
+      var line = h('span');
+      line.appendChild(h('i', 'dot ' + row[0]));
+      line.appendChild(document.createTextNode(row[1]));
+      line.appendChild(h('em', null, km1(row[2]) + ' km'));
+      tip.appendChild(line);
+    });
+    var gapLine = h('span');
+    gapLine.appendChild(document.createTextNode('Gap'));
+    gapLine.appendChild(h('em', null, km1(Math.abs(n - r)) + ' km'));
+    tip.appendChild(gapLine);
+    tip.hidden = false;
+    var tw = tip.offsetWidth, left = x + 14;
+    if (left + tw > g.W) left = x - 14 - tw;
+    tip.style.left = Math.max(0, left) + 'px';
+  }
+  function hideHover() {
+    hoverIdx = null;
+    $('tip').hidden = true;
+    if (!geo) return;
+    ['hair', 'hn', 'hr'].forEach(function (k) { geo[k].setAttribute('visibility', 'hidden'); });
+  }
+
+  /* Runners */
+  function renderRunners(t) {
+    var box = $('runners');
+    box.textContent = '';
+    var max = Math.max(t.ned, t.rest, 0.0001);
+    function head(side, name, meta, km) {
+      var row = h('div', 'row');
+      row.appendChild(h('span', 'dot ' + side));
+      row.appendChild(h('span', 'nm', name));
+      row.appendChild(h('span', 'meta', meta));
+      row.appendChild(h('span', 'km', km1(km) + ' km'));
+      return row;
+    }
+    function seg(side, km, title) {
+      var i = h('i', side);
+      i.style.width = (km / max * 100) + '%';
+      i.title = title;
+      return i;
+    }
+    var p = t.per.ned, g1 = h('div', 'grp');
+    g1.appendChild(head('ned', 'Ned', p.runs ? plural(p.runs, 'run') + ', longest ' + kmRun(p.longest) + ' km' : 'No runs yet', t.ned));
+    var b1 = h('div', 'bar');
+    if (t.ned > 0) b1.appendChild(seg('ned', t.ned, 'Ned ' + km1(t.ned) + ' km'));
+    g1.appendChild(b1);
+    box.appendChild(g1);
+
+    var g2 = h('div', 'grp');
+    g2.appendChild(head('rest', 'Ryan, Ryan and Nic', t.restRuns ? plural(t.restRuns, 'run') + ' combined' : 'No runs yet', t.rest));
+    var b2 = h('div', 'bar');
+    RUNNERS.forEach(function (r) {
+      if (r.side === 'rest' && t.per[r.id].km > 0) b2.appendChild(seg('rest', t.per[r.id].km, r.name + ' ' + km1(t.per[r.id].km) + ' km'));
+    });
+    g2.appendChild(b2);
+    RUNNERS.forEach(function (r) {
+      if (r.side !== 'rest') return;
+      var q = t.per[r.id], row = h('div', 'row member');
+      row.appendChild(h('span', 'nm', r.name));
+      row.appendChild(h('span', 'meta', q.runs ? plural(q.runs, 'run') + ', longest ' + kmRun(q.longest) + ' km' : 'No runs yet'));
+      row.appendChild(h('span', 'km', km1(q.km) + ' km'));
+      g2.appendChild(row);
+    });
+    box.appendChild(g2);
+  }
+
+  /* Run log */
+  function renderLog() {
+    var list = $('log');
+    list.textContent = '';
+    var sorted = runs.slice().sort(function (a, b) { return b.idx - a.idx || (a.at < b.at ? 1 : a.at > b.at ? -1 : 0); });
+    var btn = $('showAll');
+    btn.hidden = sorted.length <= LOG_SHORT;
+    btn.textContent = showAll ? 'Show latest ' + LOG_SHORT : 'Show all ' + sorted.length;
+    if (!sorted.length) {
+      list.appendChild(h('li', 'empty', loaded ? 'No runs logged yet. Runs appear here after each email sweep.' : (failed ? 'Could not load the run log.' : 'Loading runs.')));
+      return;
+    }
+    (showAll ? sorted : sorted.slice(0, LOG_SHORT)).forEach(function (r) {
+      var li = h('li'), who = BY_ID[r.runner];
+      li.appendChild(h('span', 'when', dayLabel(r.idx, true)));
+      var n = h('span', 'who-n');
+      n.appendChild(h('i', 'dot ' + who.side));
+      n.appendChild(document.createTextNode(who.name));
+      li.appendChild(n);
+      if (r.note) li.appendChild(h('span', 'note', r.note));
+      var end = h('span', 'end');
+      end.appendChild(h('span', 'km', kmRun(r.km) + ' km'));
+      if (canLog) {
+        if (pendingRemove === r.id) {
+          var yes = h('button', 'link danger', 'Confirm remove'); yes.type = 'button';
+          yes.addEventListener('click', function () { removeRun(r.id); });
+          var no = h('button', 'link', 'Keep'); no.type = 'button';
+          no.addEventListener('click', function () { pendingRemove = null; renderLog(); });
+          end.appendChild(yes); end.appendChild(no);
+        } else {
+          var rm = h('button', 'link', 'Remove'); rm.type = 'button';
+          rm.setAttribute('aria-label', 'Remove ' + who.name + ' ' + kmRun(r.km) + ' km on ' + dayLabel(r.idx));
+          rm.addEventListener('click', function () { pendingRemove = r.id; renderLog(); });
+          end.appendChild(rm);
+        }
+      }
+      li.appendChild(end);
+      list.appendChild(li);
+    });
+  }
+  function removeRun(id) {
+    pendingRemove = null;
+    if (!db) return;
+    db.collection('runs').doc(id).delete().catch(function () { say('Could not remove that run. Try again.', true); });
+  }
+
+  function render() {
+    var ts = todayStr(), today = idxOf(ts), t = tally();
+    lastToday = ts;
+    renderScore(t, today);
+    renderChart(t, today);
+    renderRunners(t);
+    renderLog();
+    $('updated').textContent = updatedAt ? 'Scores updated ' + fmtUpdated(updatedAt) : '';
+  }
+
+  /* Boot: draw the empty board first, then fill it from runs.json and keep it fresh. */
+  render();
+  if (window.ResizeObserver) {
+    var lastW = $('chart').clientWidth;
+    new ResizeObserver(function () {
+      var w = $('chart').clientWidth;
+      if (w && w !== lastW) { lastW = w; renderChart(tally(), idxOf(todayStr())); }
+    }).observe($('chart'));
+  }
+  setInterval(function () { if (todayStr() !== lastToday) render(); }, 600000);
+
+  function load() {
+    fetch('runs.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json();
+    }).then(function (data) {
+      var list = data && Array.isArray(data.runs) ? data.runs : [];
+      runs = list.map(clean).filter(Boolean);
+      updatedAt = data && typeof data.updated === 'string' ? data.updated : '';
+      loaded = true; failed = false;
+      render();
+    }).catch(function () {
+      if (!loaded) { failed = true; render(); }
+    });
+  }
+  load();
+  setInterval(load, 60000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) load(); });
+})();
+</script>
