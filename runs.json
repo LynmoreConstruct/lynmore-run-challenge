@@ -1,6 +1,45 @@
 {
-  "updated": "2026-10-06T11:19:00+11:00",
+  "updated": "2026-10-07T10:52:30+11:00",
   "runs": [
-    {"id": "chat-2026-10-06-ryan-mcc-1", "runner": "ryan-mcc", "km": 5, "date": "2026-10-05", "note": "via chat", "at": "2026-10-06T11:18:51+11:00"}
+    {
+      "id": "chat-2026-10-06-ryan-mcc-1",
+      "runner": "ryan-mcc",
+      "km": 5,
+      "date": "2026-10-05",
+      "note": "via chat",
+      "at": "2026-10-06T11:18:51+11:00"
+    },
+    {
+      "id": "email-1a10f352c4c45010",
+      "runner": "ned",
+      "km": 9,
+      "date": "2026-10-06",
+      "note": "via email",
+      "at": "2026-10-06T14:14:53+11:00"
+    },
+    {
+      "id": "chat-2026-10-07-ryan-mcp-1",
+      "runner": "ryan-mcp",
+      "km": 5.6,
+      "date": "2026-10-06",
+      "note": "via chat",
+      "at": "2026-10-07T09:30:00+11:00"
+    },
+    {
+      "id": "chat-2026-10-07-nic-1",
+      "runner": "nic",
+      "km": 3.6,
+      "date": "2026-10-06",
+      "note": "via chat",
+      "at": "2026-10-07T09:30:00+11:00"
+    },
+    {
+      "id": "chat-2026-10-07-ryan-mcc-1",
+      "runner": "ryan-mcc",
+      "km": 10,
+      "date": "2026-10-06",
+      "note": "via chat",
+      "at": "2026-10-07T09:30:00+11:00"
+    }
   ]
 }
