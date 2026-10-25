@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23T12:15:00+11:00",
+  "updated": "2026-10-26T09:05:00+11:00",
   "runs": [
     {
       "id": "chat-2026-10-06-ryan-mcc-1",
@@ -200,6 +200,30 @@
       "date": "2026-10-22",
       "note": "via chat",
       "at": "2026-10-23T12:15:00+11:00"
+    },
+    {
+      "id": "email-1a16ba9245705553",
+      "runner": "nic",
+      "km": 5.14,
+      "date": "2026-10-24",
+      "note": "via email (screenshot: Saturday Afternoon Run, 5.14 km)",
+      "at": "2026-10-24T13:06:37+11:00"
+    },
+    {
+      "id": "chat-2026-10-26-ryan-mcc-1",
+      "runner": "ryan-mcc",
+      "km": 10.1,
+      "date": "2026-10-24",
+      "note": "via chat",
+      "at": "2026-10-26T09:05:00+11:00"
+    },
+    {
+      "id": "email-1a1725bbeb1e0252",
+      "runner": "ned",
+      "km": 10.7,
+      "date": "2026-10-25",
+      "note": "via email",
+      "at": "2026-10-25T20:19:25+11:00"
     }
   ]
 }
