@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T09:00:00+11:00",
+  "updated": "2026-10-28T09:21:49+11:00",
   "runs": [
     {
       "id": "chat-2026-10-06-ryan-mcc-1",
@@ -232,6 +232,30 @@
       "date": "2026-10-26",
       "note": "via email",
       "at": "2026-10-26T18:51:48+11:00"
+    },
+    {
+      "id": "chat-2026-10-28-ryan-mcp-1",
+      "runner": "ryan-mcp",
+      "km": 3.0,
+      "date": "2026-10-26",
+      "note": "via chat (Ryan McCracken, held to 28 Oct)",
+      "at": "2026-10-28T06:30:00+11:00"
+    },
+    {
+      "id": "email-1a17b1edb6c005d8",
+      "runner": "nic",
+      "km": 3.7,
+      "date": "2026-10-27",
+      "note": "via email (screenshot: Tuesday Afternoon Run 12:21pm, 3.70 km; held to 28 Oct)",
+      "at": "2026-10-27T13:09:28+11:00"
+    },
+    {
+      "id": "email-1a17b32b3a906f30",
+      "runner": "nic",
+      "km": 0.62,
+      "date": "2026-10-27",
+      "note": "via email (screenshot: Tuesday Afternoon Run 1:12pm, 0.62 km; held to 28 Oct)",
+      "at": "2026-10-27T13:31:10+11:00"
     }
   ]
 }
