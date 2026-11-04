@@ -23,6 +23,11 @@
   color-scheme: light; --ground: #F7F5EE; --panel: #FFFFFF; --raised: #F0ECDD; --line: #DDD7C3;
   --ink: #12120F; --ink-2: #4F4B3C; --ink-3: #6E6955; --gold: #8B7319; --cream: #1A1A18; --bad: #A63A1E;
 }
+:root { --c-ned: #c98500; --c-ryan-mcc: #3987e5; --c-ryan-mcp: #e66767; --c-nic: #199e70; --c-kevin: #008300; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) { --c-ned: #eda100; --c-ryan-mcc: #2a78d6; --c-ryan-mcp: #e34948; --c-nic: #1baf7a; --c-kevin: #008300; }
+}
+:root[data-theme="light"] { --c-ned: #eda100; --c-ryan-mcc: #2a78d6; --c-ryan-mcp: #e34948; --c-nic: #1baf7a; --c-kevin: #008300; }
 * { box-sizing: border-box; }
 body { background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; margin: 0; padding-inline: 20px; padding-block: 28px 56px; }
 .wrap { max-width: 880px; margin-inline: auto; display: flex; flex-direction: column; gap: 44px; }
@@ -68,7 +73,30 @@ h2 { font-size: 1.05rem; font-weight: 600; }
 .brow.none .t { color: var(--ink-3); font-weight: 400; font-size: 0.95rem; }
 .bar { height: 6px; background: var(--raised); border-radius: 3px; overflow: hidden; grid-column: 2 / -1; }
 .bar i { display: block; height: 100%; background: var(--cream); }
-.brow.first .bar i { background: var(--gold); }
+
+
+/* Chart */
+.sec-head { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; align-items: baseline; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.85rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 12px; height: 12px; display: inline-block; flex: none; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { font-family: var(--font); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .ax { fill: var(--ink-3); font-size: 11px; }
+.chart .ser { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .pt { stroke: var(--ground); stroke-width: 2; }
+.chart .lbl { font-size: 11px; font-weight: 500; fill: var(--ink-2); }
+.chart .none { fill: var(--ink-3); font-size: 13px; }
+.chart .hit { fill: transparent; }
+.chart .x { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.tip { position: absolute; top: 8px; pointer-events: none; z-index: 2; background: var(--raised); border: 1px solid var(--line); border-radius: 6px;
+  padding: 8px 10px; font-size: 0.8rem; line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tip b { font-weight: 600; display: block; }
+.tip span { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.tip em { font-style: normal; color: var(--ink); margin-left: auto; padding-left: 12px; }
+.row-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; }
 
 /* Rules and how */
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); }
@@ -121,6 +149,14 @@ h2 { font-size: 1.05rem; font-weight: 600; }
     <p class="sub" id="leaderSub">The clock starts on your first pull and stops when the last monitor hits its target.</p>
   </div>
 
+  <section aria-labelledby="hChart">
+    <div class="sec-head">
+      <h2 id="hChart">Times over the month</h2>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="chart" id="chart"><div class="tip" id="tip" hidden></div></div>
+  </section>
+
   <section aria-labelledby="hBoard">
     <h2 id="hBoard">Leaderboard, best time each</h2>
     <div class="board" id="board"></div>
@@ -160,11 +196,13 @@ h2 { font-size: 1.05rem; font-weight: 600; }
   'use strict';
   var CLOSE = Date.UTC(2026, 10, 30), DAY_MS = 86400000;
   var ATHLETES = [
-    { id: 'ned', name: 'Ned' },
-    { id: 'ryan-mcc', name: 'Ryan McCracken' },
-    { id: 'ryan-mcp', name: 'Ryan McPherson' },
-    { id: 'nic', name: 'Nic Dalkin' }
+    { id: 'ned', name: 'Ned', short: 'Ned' },
+    { id: 'ryan-mcc', name: 'Ryan McCracken', short: 'Ryan McC' },
+    { id: 'ryan-mcp', name: 'Ryan McPherson', short: 'Ryan McP' },
+    { id: 'nic', name: 'Nic Dalkin', short: 'Nic' },
+    { id: 'kevin', name: 'Kevin Wijaya', short: 'Kevin' }
   ];
+  var OPEN = Date.UTC(2026, 10, 4);
   var BY_ID = {}; ATHLETES.forEach(function (a) { BY_ID[a.id] = a; });
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   function $(id) { return document.getElementById(id); }
@@ -224,17 +262,88 @@ h2 { font-size: 1.05rem; font-weight: 600; }
       var gap = r.b && i > 0 ? '<span class="gap">' + fmtGap(r.b.t - top.t) + '</span>' : '';
       var w = r.b ? Math.max(8, Math.round(100 * top.t / r.b.t)) : 0;
       return '<div class="' + cls + '"><span class="pos">' + (r.b ? i + 1 : '') + '</span>' +
-        '<span class="nm">' + esc(r.a.name) + '<span class="meta">' + esc(meta) + '</span></span>' +
+        '<span class="nm"><i class="row-dot" style="background:var(--c-' + r.a.id + ')"></i>' + esc(r.a.name) + '<span class="meta">' + esc(meta) + '</span></span>' +
         '<span class="t">' + t + gap + '</span>' +
-        (r.b ? '<div class="bar"><i style="width:' + w + '%"></i></div>' : '') + '</div>';
+        (r.b ? '<div class="bar"><i style="width:' + w + '%;background:var(--c-' + r.a.id + ')"></i></div>' : '') + '</div>';
     }).join('');
 
     var log = attempts.slice().sort(function (x, y) { return (y.date || '').localeCompare(x.date || ''); });
     $('log').innerHTML = log.length ? log.map(function (a) {
       var pb = best[a.athlete] && best[a.athlete].id === a.id ? '<span class="pb">best</span>' : '';
-      return '<li><span class="when">' + fmtDate(a.date) + '</span><span class="who">' + esc(BY_ID[a.athlete].name) + '</span>' +
+      return '<li><span class="when">' + fmtDate(a.date) + '</span><span class="who"><i class="row-dot" style="background:var(--c-' + a.athlete + ')"></i>' + esc(BY_ID[a.athlete].name) + '</span>' +
         (a.note ? '<span class="note">' + esc(a.note) + '</span>' : '') + '<span class="t">' + fmtT(a.t) + pb + '</span></li>';
     }).join('') : '<li class="empty">No attempts logged yet. First one on the board sets the target.</li>';
+  }
+
+  var SHAPE = { 'ned': 'circle', 'ryan-mcc': 'square', 'ryan-mcp': 'diamond', 'nic': 'triangle', 'kevin': 'tri-down' };
+  function marker(a, x, y) {
+    var st = ' class="pt" style="fill:var(--c-' + a.id + ')"', k = SHAPE[a.id], r = 5;
+    if (k === 'square') return '<rect' + st + ' x="' + (x - 4.5).toFixed(1) + '" y="' + (y - 4.5).toFixed(1) + '" width="9" height="9" rx="1.5"/>';
+    if (k === 'diamond') return '<path' + st + ' d="M' + x + ' ' + (y - 6) + 'L' + (x + 6) + ' ' + y + 'L' + x + ' ' + (y + 6) + 'L' + (x - 6) + ' ' + y + 'Z"/>';
+    if (k === 'triangle') return '<path' + st + ' d="M' + x + ' ' + (y - 6) + 'L' + (x + 6) + ' ' + (y + 4.5) + 'L' + (x - 6) + ' ' + (y + 4.5) + 'Z"/>';
+    if (k === 'tri-down') return '<path' + st + ' d="M' + x + ' ' + (y + 6) + 'L' + (x + 6) + ' ' + (y - 4.5) + 'L' + (x - 6) + ' ' + (y - 4.5) + 'Z"/>';
+    return '<circle' + st + ' cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '"/>';
+  }
+  function swatch(id) {
+    return '<svg class="sw" viewBox="-7 -7 14 14" aria-hidden="true">' + marker({ id: id }, 0, 0).replace(' class="pt"', '') + '</svg>';
+  }
+  function renderChart(attempts) {
+    var narrow = $('chart').clientWidth < 600;
+    var W = narrow ? 420 : 880, H = narrow ? 300 : 300, L = 40, R = narrow ? 84 : 96, T = 16, B = 30, pw = W - L - R, ph = H - T - B;
+    var days = Math.round((CLOSE - OPEN) / DAY_MS);
+    function xOf(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); if (!m) return null;
+      var i = (Date.UTC(+m[1], +m[2] - 1, +m[3]) - OPEN) / DAY_MS; return L + Math.max(0, Math.min(days, i)) / days * pw; }
+    var ts = attempts.map(function (a) { return a.t; });
+    var lo = ts.length ? Math.min.apply(null, ts) : 150, hi = ts.length ? Math.max.apply(null, ts) : 300;
+    if (hi - lo < 20) { lo -= 10; hi += 10; }
+    var pad = (hi - lo) * 0.1, raw = (hi - lo + 2 * pad) / 4;
+    var stepS = [5, 10, 15, 20, 30, 60, 120].filter(function (v) { return v >= raw; })[0] || 120;
+    lo = Math.max(0, Math.floor((lo - pad) / stepS) * stepS); hi = Math.ceil((hi + pad) / stepS) * stepS;
+    function yOf(t) { return T + (t - lo) / (hi - lo) * ph; }
+    var out = [], i, n;
+    for (var v = lo; v <= hi + 0.001; v += stepS) { var y = yOf(v);
+      out.push('<line class="grid" x1="' + L + '" x2="' + (L + pw) + '" y1="' + y + '" y2="' + y + '"/>');
+      out.push('<text class="ax" x="' + (L - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + fmtT(v).replace(/\.0$/, '') + '</text>'); }
+    out.push('<text class="ax" x="' + (L + pw) + '" y="' + (T - 4) + '" text-anchor="end">Higher is faster</text>');
+    var ticks = narrow ? [0, 14, days] : [0, 7, 14, 21, days];
+    ticks.forEach(function (d) { var x = L + d / days * pw, dt = new Date(OPEN + d * DAY_MS);
+      out.push('<text class="ax" x="' + x + '" y="' + (H - 8) + '" text-anchor="middle">' + dt.getUTCDate() + ' ' + MONTHS[dt.getUTCMonth()] + '</text>'); });
+    var labels = [];
+    ATHLETES.forEach(function (a) {
+      var pts = attempts.filter(function (x) { return x.athlete === a.id && xOf(x.date) !== null; })
+        .sort(function (p, q) { return p.date.localeCompare(q.date); });
+      if (!pts.length) return;
+      var d = pts.map(function (p, k) { return (k ? 'L' : 'M') + xOf(p.date).toFixed(1) + ' ' + yOf(p.t).toFixed(1); }).join(' ');
+      out.push('<path class="ser" d="' + d + '" style="stroke:var(--c-' + a.id + ')"/>');
+      pts.forEach(function (p) { out.push(marker(a, xOf(p.date), yOf(p.t))); });
+      var last = pts[pts.length - 1];
+      labels.push({ x: xOf(last.date) + 10, y: yOf(last.t) + 4, txt: a.short + ' ' + fmtT(last.t) });
+    });
+    labels.sort(function (p, q) { return p.y - q.y; });
+    for (i = 1; i < labels.length; i++) {
+      var prev = labels[i - 1], cur = labels[i];
+      if (Math.abs(cur.x - prev.x) < 90 && cur.y - prev.y < 13) cur.y = prev.y + 13;
+    }
+    labels.forEach(function (l) { out.push('<text class="lbl" x="' + l.x.toFixed(1) + '" y="' + l.y.toFixed(1) + '">' + esc(l.txt) + '</text>'); });
+    if (!attempts.length) out.push('<text class="none" x="' + (L + pw / 2) + '" y="' + (T + ph / 2) + '" text-anchor="middle">Lines appear as times come in. Lower is faster.</text>');
+    out.push('<line class="x" id="xline" x1="0" x2="0" y1="' + T + '" y2="' + (T + ph) + '" style="display:none"/>');
+    out.push('<rect class="hit" id="hit" x="' + L + '" y="' + T + '" width="' + pw + '" height="' + ph + '"/>');
+    var el = $('chart');
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Attempt times by date, one line per person">' + out.join('') + '</svg><div class="tip" id="tip" hidden></div>';
+    $('legend').innerHTML = ATHLETES.map(function (a) { return '<span>' + swatch(a.id) + esc(a.name) + '</span>'; }).join('');
+
+    var svg = el.querySelector('svg'), hit = $('hit'), xl = $('xline'), tip = $('tip');
+    function dayAt(ev) { var r = svg.getBoundingClientRect(); var px = (ev.clientX - r.left) / r.width * W; return Math.round(Math.max(0, Math.min(days, (px - L) / pw * days))); }
+    hit.addEventListener('mousemove', function (ev) {
+      var d = dayAt(ev), iso = new Date(OPEN + d * DAY_MS).toISOString().slice(0, 10);
+      var rows = attempts.filter(function (a) { return a.date === iso; });
+      if (!rows.length) { tip.hidden = true; xl.style.display = 'none'; return; }
+      var x = L + d / days * pw; xl.setAttribute('x1', x); xl.setAttribute('x2', x); xl.style.display = '';
+      tip.innerHTML = '<b>' + fmtDate(iso) + '</b>' + rows.map(function (a) { return '<span>' + swatch(a.athlete) + esc(BY_ID[a.athlete].name) + '<em>' + fmtT(a.t) + '</em></span>'; }).join('');
+      tip.hidden = false; var r = svg.getBoundingClientRect(); var lx = x / W * r.width;
+      tip.style.left = (lx + 14 + tip.offsetWidth > r.width ? lx - 14 - tip.offsetWidth : lx + 14) + 'px';
+    });
+    hit.addEventListener('mouseleave', function () { tip.hidden = true; xl.style.display = 'none'; });
   }
 
   var left = daysLeft();
@@ -244,8 +353,10 @@ h2 { font-size: 1.05rem; font-weight: 600; }
   fetch('results.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (data) {
     var rows = (data && Array.isArray(data.attempts) ? data.attempts : []).map(clean).filter(Boolean);
     $('updated').textContent = data && data.updated ? 'Board updated ' + fmtUpdated(data.updated) : '';
-    render(rows);
-  }).catch(function () { render([]); $('updated').textContent = 'Could not load results.'; });
+    render(rows); renderChart(rows);
+    var lastNarrow = $('chart').clientWidth < 600;
+    window.addEventListener('resize', function () { var n = $('chart').clientWidth < 600; if (n !== lastNarrow) { lastNarrow = n; renderChart(rows); } });
+  }).catch(function () { render([]); renderChart([]); $('updated').textContent = 'Could not load results.'; });
 })();
 </script>
 </body>
