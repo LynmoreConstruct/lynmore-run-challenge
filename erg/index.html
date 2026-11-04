@@ -115,7 +115,7 @@ h2 { font-size: 1.05rem; font-weight: 600; }
 
   <div class="leader" id="leader" aria-live="polite">
     <p class="name" id="leaderName">No times in yet</p>
-    <p class="time" id="leaderTime">--:--</p>
+    <p class="time" id="leaderTime" hidden></p>
     <p class="sub" id="leaderSub">The clock starts on the first pull of the ski erg and stops when the bike reads 10 calories.</p>
   </div>
 
@@ -209,7 +209,7 @@ h2 { font-size: 1.05rem; font-weight: 600; }
 
     if (top) {
       $('leaderName').textContent = 'Fastest so far: ' + ranked[0].a.name;
-      $('leaderTime').textContent = fmtT(top.t);
+      $('leaderTime').hidden = false; $('leaderTime').textContent = fmtT(top.t);
       var second = ranked[1] && ranked[1].b;
       $('leaderSub').textContent = second ? ranked[1].a.name + ' is ' + fmtGap(second.t - top.t) + ' back.' : 'Nobody else has posted a time yet.';
     }
