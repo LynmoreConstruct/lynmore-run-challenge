@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28T09:50:00+11:00",
+  "updated": "2026-11-04T13:00:00+11:00",
   "runs": [
     {
       "id": "chat-2026-10-06-ryan-mcc-1",
@@ -272,6 +272,62 @@
       "date": "2026-10-27",
       "note": "via chat",
       "at": "2026-10-28T09:50:00+11:00"
+    },
+    {
+      "id": "email-1a18569a2f663921",
+      "runner": "ned",
+      "km": 6,
+      "date": "2026-10-29",
+      "note": "via email",
+      "at": "2026-10-29T13:07:19+11:00"
+    },
+    {
+      "id": "email-1a1a432beb3113e3-1",
+      "runner": "ned",
+      "km": 10.2,
+      "date": "2026-11-02",
+      "note": "via email 4 Nov (run date not stated, final days)",
+      "at": "2026-11-04T13:00:00+11:00"
+    },
+    {
+      "id": "email-1a1a432beb3113e3-2",
+      "runner": "ned",
+      "km": 8,
+      "date": "2026-11-02",
+      "note": "via email 4 Nov (run date not stated, final days)",
+      "at": "2026-11-04T13:00:00+11:00"
+    },
+    {
+      "id": "email-1a1a432beb3113e3-3",
+      "runner": "ned",
+      "km": 7,
+      "date": "2026-11-02",
+      "note": "via email 4 Nov (run date not stated, final days)",
+      "at": "2026-11-04T13:00:00+11:00"
+    },
+    {
+      "id": "chat-2026-11-04-ryan-mcp-1",
+      "runner": "ryan-mcp",
+      "km": 4,
+      "date": "2026-11-02",
+      "note": "via chat (date not stated, final days)",
+      "at": "2026-11-04T13:00:00+11:00"
+    },
+    {
+      "id": "chat-2026-11-04-nic-1",
+      "runner": "nic",
+      "km": 3.8,
+      "date": "2026-11-02",
+      "note": "via chat (date not stated, final days)",
+      "at": "2026-11-04T13:00:00+11:00"
+    },
+    {
+      "id": "chat-2026-11-04-ryan-mcc-swim-1",
+      "runner": "ryan-mcc",
+      "km": 22.33,
+      "date": "2026-11-02",
+      "note": "3.35 km swim at 1.5 km swim = 10 km run (Achilles)",
+      "at": "2026-11-04T13:00:00+11:00"
     }
   ]
 }
