@@ -33,6 +33,7 @@ h1, h2, h3, p, ol, ul { margin: 0; }
 .top-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 h1 { font-size: clamp(1.9rem, 6vw, 2.9rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
 .terms { color: var(--ink-2); max-width: 50ch; }
+.prize { color: var(--gold); font-weight: 600; margin-top: 4px; }
 .day { display: flex; flex-direction: column; gap: 2px; text-align: right; }
 .day-n { font-size: 1.15rem; font-weight: 600; }
 .day-sub { font-size: 0.85rem; color: var(--ink-3); }
@@ -98,7 +99,8 @@ h2 { font-size: 1.05rem; font-weight: 600; }
     <div class="top-main">
       <p class="eyebrow">Lynmore Construct erg challenge</p>
       <h1>Ski, row, bike. Fastest time wins.</h1>
-      <p class="terms">One continuous effort across three machines. Best total time, rests and transitions included. Closes 5pm Monday 30 November 2026.</p>
+      <p class="terms">One continuous effort across three machines, in any order. Best total time, rests and transitions included. Closes 5pm Monday 30 November 2026.</p>
+      <p class="prize">Winner gets six months at Linkd Studio, paid for.</p>
     </div>
     <div class="day">
       <span class="day-n" id="dayN"></span>
@@ -108,15 +110,15 @@ h2 { font-size: 1.05rem; font-weight: 600; }
   </header>
 
   <div class="course" role="group" aria-label="The course">
-    <div class="leg"><span class="n">Leg 1</span><span class="mach">Ski erg</span><span class="qty">300<small>m</small></span></div>
-    <div class="leg"><span class="n">Leg 2</span><span class="mach">Rower</span><span class="qty">500<small>m</small></span></div>
-    <div class="leg"><span class="n">Leg 3</span><span class="mach">Assault bike</span><span class="qty">10<small>cal</small></span></div>
+    <div class="leg"><span class="n">Any order</span><span class="mach">Ski erg</span><span class="qty">300<small>m</small></span></div>
+    <div class="leg"><span class="n">Any order</span><span class="mach">Rower</span><span class="qty">500<small>m</small></span></div>
+    <div class="leg"><span class="n">Any order</span><span class="mach">Assault bike</span><span class="qty">10<small>cal</small></span></div>
   </div>
 
   <div class="leader" id="leader" aria-live="polite">
     <p class="name" id="leaderName">No times in yet</p>
     <p class="time" id="leaderTime" hidden></p>
-    <p class="sub" id="leaderSub">The clock starts on the first pull of the ski erg and stops when the bike reads 10 calories.</p>
+    <p class="sub" id="leaderSub">The clock starts on your first pull and stops when the last monitor hits its target.</p>
   </div>
 
   <section aria-labelledby="hBoard">
@@ -128,12 +130,13 @@ h2 { font-size: 1.05rem; font-weight: 600; }
     <h2 id="hRules">Rules</h2>
     <div class="panel">
       <ol>
-        <li><b>The course is fixed.</b> 300 m on the ski erg, then 500 m on the rower, then 10 calories on the assault bike, in that order.</li>
-        <li><b>One clock.</b> Time runs from the first pull on the ski erg to the moment the bike reads 10 cal. Transitions between machines and any rest count. No pausing the clock and no adding three machine times together.</li>
+        <li><b>Three machines, your order.</b> 300 m on the ski erg, 500 m on the rower and 10 calories on the assault bike. Do them in whichever order you like, but all three in the one go.</li>
+        <li><b>One clock.</b> Time runs from your first pull to the moment the last monitor hits its target. Transitions between machines and any rest count. No pausing the clock and no adding three machine times together.</li>
         <li><b>Video or it did not happen.</b> One continuous video of the whole attempt, showing each monitor reaching its distance or calories and the move between machines. A cut in the video voids the attempt.</li>
         <li><b>Monitors reset to zero</b> before each leg, and the reset is on the video.</li>
         <li><b>As many attempts as you like.</b> Only your best time counts.</li>
         <li><b>Deadline.</b> Attempts must be emailed by 5pm Monday 30 November 2026.</li>
+        <li><b>Prize.</b> The fastest verified time wins six months of Linkd Studio membership, paid for.</li>
       </ol>
     </div>
   </section>
