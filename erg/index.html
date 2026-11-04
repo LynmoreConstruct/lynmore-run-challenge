@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lynmore Erg Challenge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --ground: #0B0B0A; --panel: #151513; --raised: #1F1E1A; --line: #2C2B26;
+  --ink: #F4F0E1; --ink-2: #B9B3A0; --ink-3: #8A8573;
+  --gold: #BC9C22; --on-gold: #0B0B0A; --cream: #EFE7C7; --bad: #E8876D;
+  --font: "Poppins", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light; --ground: #F7F5EE; --panel: #FFFFFF; --raised: #F0ECDD; --line: #DDD7C3;
+    --ink: #12120F; --ink-2: #4F4B3C; --ink-3: #6E6955; --gold: #8B7319; --cream: #1A1A18; --bad: #A63A1E;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light; --ground: #F7F5EE; --panel: #FFFFFF; --raised: #F0ECDD; --line: #DDD7C3;
+  --ink: #12120F; --ink-2: #4F4B3C; --ink-3: #6E6955; --gold: #8B7319; --cream: #1A1A18; --bad: #A63A1E;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; margin: 0; padding-inline: 20px; padding-block: 28px 56px; }
+.wrap { max-width: 880px; margin-inline: auto; display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3, p, ol, ul { margin: 0; }
+.eyebrow { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-3); }
+
+.top { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: flex-end; }
+.top-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+h1 { font-size: clamp(1.9rem, 6vw, 2.9rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; text-wrap: balance; }
+.terms { color: var(--ink-2); max-width: 50ch; }
+.day { display: flex; flex-direction: column; gap: 2px; text-align: right; }
+.day-n { font-size: 1.15rem; font-weight: 600; }
+.day-sub { font-size: 0.85rem; color: var(--ink-3); }
+
+/* Course strip */
+.course { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.leg { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; }
+.leg .n { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); }
+.leg .mach { font-weight: 600; }
+.leg .qty { font-size: clamp(1.6rem, 5vw, 2.3rem); font-weight: 700; color: var(--gold); line-height: 1.1; letter-spacing: -0.02em; }
+.leg .qty small { font-size: 0.42em; font-weight: 500; color: var(--ink-3); margin-left: 0.25em; letter-spacing: 0; }
+
+/* Leader */
+.leader { display: flex; flex-direction: column; gap: 10px; }
+.leader .name { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+.leader .time { font-size: clamp(2.7rem, 12vw, 6.2rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: var(--gold); font-variant-numeric: tabular-nums; }
+.leader .sub { color: var(--ink-2); max-width: 60ch; }
+
+/* Board */
+section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+h2 { font-size: 1.05rem; font-weight: 600; }
+.board { display: flex; flex-direction: column; }
+.brow { display: grid; grid-template-columns: 34px 1fr auto; gap: 8px 14px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
+.brow:last-child { border-bottom: 1px solid var(--line); }
+.brow .pos { font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.brow.first .pos { color: var(--gold); }
+.brow .nm { font-weight: 600; min-width: 0; }
+.brow .meta { display: block; font-weight: 400; font-size: 0.85rem; color: var(--ink-3); }
+.brow .t { font-weight: 600; font-size: 1.25rem; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.brow.first .t { color: var(--gold); }
+.brow .gap { display: block; font-weight: 400; font-size: 0.8rem; color: var(--ink-3); }
+.brow.none .t { color: var(--ink-3); font-weight: 400; font-size: 0.95rem; }
+.bar { height: 6px; background: var(--raised); border-radius: 3px; overflow: hidden; grid-column: 2 / -1; }
+.bar i { display: block; height: 100%; background: var(--cream); }
+.brow.first .bar i { background: var(--gold); }
+
+/* Rules and how */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--ink-2); }
+.panel p, .panel li { max-width: 68ch; }
+.panel ol, .panel ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.panel b { color: var(--ink); font-weight: 600; }
+
+/* Log */
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.log li { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 11px 0; border-top: 1px solid var(--line); min-width: 0; }
+.log .when { color: var(--ink-3); font-size: 0.85rem; width: 86px; flex: none; }
+.log .who { font-weight: 500; }
+.log .note { color: var(--ink-3); font-size: 0.85rem; min-width: 0; overflow-wrap: anywhere; }
+.log .t { margin-left: auto; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.log .pb { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-left: 8px; }
+.empty { color: var(--ink-3); padding: 11px 0; border-top: 1px solid var(--line); }
+
+@media (max-width: 620px) {
+  .course { grid-template-columns: 1fr; }
+  .day { text-align: left; }
+  .brow { grid-template-columns: 28px 1fr auto; gap: 8px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="top-main">
+      <p class="eyebrow">Lynmore Construct erg challenge</p>
+      <h1>Ski, row, bike. Fastest time wins.</h1>
+      <p class="terms">One continuous effort across three machines. Best total time, rests and transitions included. Closes 5pm Monday 30 November 2026.</p>
+    </div>
+    <div class="day">
+      <span class="day-n" id="dayN"></span>
+      <span class="day-sub" id="daySub"></span>
+      <span class="day-sub" id="updated"></span>
+    </div>
+  </header>
+
+  <div class="course" role="group" aria-label="The course">
+    <div class="leg"><span class="n">Leg 1</span><span class="mach">Ski erg</span><span class="qty">300<small>m</small></span></div>
+    <div class="leg"><span class="n">Leg 2</span><span class="mach">Rower</span><span class="qty">500<small>m</small></span></div>
+    <div class="leg"><span class="n">Leg 3</span><span class="mach">Assault bike</span><span class="qty">10<small>cal</small></span></div>
+  </div>
+
+  <div class="leader" id="leader" aria-live="polite">
+    <p class="name" id="leaderName">No times in yet</p>
+    <p class="time" id="leaderTime">--:--</p>
+    <p class="sub" id="leaderSub">The clock starts on the first pull of the ski erg and stops when the bike reads 10 calories.</p>
+  </div>
+
+  <section aria-labelledby="hBoard">
+    <h2 id="hBoard">Leaderboard, best time each</h2>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section aria-labelledby="hRules">
+    <h2 id="hRules">Rules</h2>
+    <div class="panel">
+      <ol>
+        <li><b>The course is fixed.</b> 300 m on the ski erg, then 500 m on the rower, then 10 calories on the assault bike, in that order.</li>
+        <li><b>One clock.</b> Time runs from the first pull on the ski erg to the moment the bike reads 10 cal. Transitions between machines and any rest count. No pausing the clock and no adding three machine times together.</li>
+        <li><b>Video or it did not happen.</b> One continuous video of the whole attempt, showing each monitor reaching its distance or calories and the move between machines. A cut in the video voids the attempt.</li>
+        <li><b>Monitors reset to zero</b> before each leg, and the reset is on the video.</li>
+        <li><b>As many attempts as you like.</b> Only your best time counts.</li>
+        <li><b>Deadline.</b> Attempts must be emailed by 5pm Monday 30 November 2026.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="hHow">
+    <h2 id="hHow">How to submit a time</h2>
+    <div class="panel">
+      <p>Email Ryan McCracken with "Erg challenge" in the subject line. Put your total time in the body (for example 3:42.5) and attach the video, or a link to it if the file is too big for email. Say which day you did it if it was not the day you sent it.</p>
+      <p>Times go on the board once the video has been checked. Anything that cannot be verified from the video is not scored.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="hLog">
+    <h2 id="hLog">Attempt log</h2>
+    <ul class="log" id="log"></ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var CLOSE = Date.UTC(2026, 10, 30), DAY_MS = 86400000;
+  var ATHLETES = [
+    { id: 'ned', name: 'Ned' },
+    { id: 'ryan-mcc', name: 'Ryan McCracken' },
+    { id: 'ryan-mcp', name: 'Ryan McPherson' },
+    { id: 'nic', name: 'Nic Dalkin' }
+  ];
+  var BY_ID = {}; ATHLETES.forEach(function (a) { BY_ID[a.id] = a; });
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function fmtT(s) {
+    if (!isFinite(s)) return '--:--';
+    var m = Math.floor(s / 60), r = s - m * 60;
+    var rs = (Math.round(r * 10) / 10).toFixed(1);
+    if (Number(rs) < 10) rs = '0' + rs;
+    return m + ':' + rs;
+  }
+  function fmtGap(s) { return '+' + (Math.round(s * 10) / 10).toFixed(1) + 's'; }
+  function fmtDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); if (!m) return '';
+    return (+m[3]) + ' ' + MONTHS[+m[2] - 1];
+  }
+  function fmtUpdated(iso) {
+    var d = new Date(iso); if (isNaN(d)) return '';
+    return d.toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Australia/Melbourne' });
+  }
+  function daysLeft() {
+    var p = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+    var o = {}; p.forEach(function (x) { o[x.type] = x.value; });
+    return Math.round((CLOSE - Date.UTC(+o.year, +o.month - 1, +o.day)) / DAY_MS);
+  }
+
+  /* Rows come from a public file, so check every field before using it. */
+  function clean(d) {
+    if (!d || typeof d !== 'object' || !BY_ID[d.athlete]) return null;
+    var t = Number(d.time_s);
+    if (!isFinite(t) || t <= 30 || t > 3600) return null;
+    return { id: String(d.id || ''), athlete: d.athlete, t: Math.round(t * 10) / 10,
+      date: typeof d.date === 'string' ? d.date : '', note: typeof d.note === 'string' ? d.note.slice(0, 80) : '' };
+  }
+
+  function render(attempts) {
+    var best = {};
+    attempts.forEach(function (a) { if (!best[a.athlete] || a.t < best[a.athlete].t) best[a.athlete] = a; });
+    var ranked = ATHLETES.map(function (a) {
+      return { a: a, b: best[a.id] || null, n: attempts.filter(function (x) { return x.athlete === a.id; }).length };
+    });
+    ranked.sort(function (x, y) { if (!x.b && !y.b) return 0; if (!x.b) return 1; if (!y.b) return -1; return x.b.t - y.b.t; });
+    var top = ranked[0].b;
+
+    if (top) {
+      $('leaderName').textContent = 'Fastest so far: ' + ranked[0].a.name;
+      $('leaderTime').textContent = fmtT(top.t);
+      var second = ranked[1] && ranked[1].b;
+      $('leaderSub').textContent = second ? ranked[1].a.name + ' is ' + fmtGap(second.t - top.t) + ' back.' : 'Nobody else has posted a time yet.';
+    }
+
+    $('board').innerHTML = ranked.map(function (r, i) {
+      var cls = 'brow' + (i === 0 && r.b ? ' first' : '') + (r.b ? '' : ' none');
+      var meta = r.b ? (r.n + ' attempt' + (r.n === 1 ? '' : 's') + ', best on ' + fmtDate(r.b.date)) : 'no time yet';
+      var t = r.b ? fmtT(r.b.t) : 'no time';
+      var gap = r.b && i > 0 ? '<span class="gap">' + fmtGap(r.b.t - top.t) + '</span>' : '';
+      var w = r.b ? Math.max(8, Math.round(100 * top.t / r.b.t)) : 0;
+      return '<div class="' + cls + '"><span class="pos">' + (r.b ? i + 1 : '') + '</span>' +
+        '<span class="nm">' + esc(r.a.name) + '<span class="meta">' + esc(meta) + '</span></span>' +
+        '<span class="t">' + t + gap + '</span>' +
+        (r.b ? '<div class="bar"><i style="width:' + w + '%"></i></div>' : '') + '</div>';
+    }).join('');
+
+    var log = attempts.slice().sort(function (x, y) { return (y.date || '').localeCompare(x.date || ''); });
+    $('log').innerHTML = log.length ? log.map(function (a) {
+      var pb = best[a.athlete] && best[a.athlete].id === a.id ? '<span class="pb">best</span>' : '';
+      return '<li><span class="when">' + fmtDate(a.date) + '</span><span class="who">' + esc(BY_ID[a.athlete].name) + '</span>' +
+        (a.note ? '<span class="note">' + esc(a.note) + '</span>' : '') + '<span class="t">' + fmtT(a.t) + pb + '</span></li>';
+    }).join('') : '<li class="empty">No attempts logged yet. First one on the board sets the target.</li>';
+  }
+
+  var left = daysLeft();
+  $('dayN').textContent = left > 0 ? left + ' day' + (left === 1 ? '' : 's') + ' to go' : left === 0 ? 'Closes today, 5pm' : 'Closed';
+  $('daySub').textContent = 'Closes Mon 30 Nov 2026';
+
+  fetch('results.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (data) {
+    var rows = (data && Array.isArray(data.attempts) ? data.attempts : []).map(clean).filter(Boolean);
+    $('updated').textContent = data && data.updated ? 'Board updated ' + fmtUpdated(data.updated) : '';
+    render(rows);
+  }).catch(function () { render([]); $('updated').textContent = 'Could not load results.'; });
+})();
+</script>
+</body>
+</html>
