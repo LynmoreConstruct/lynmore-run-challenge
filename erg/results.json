@@ -1,7 +1,8 @@
 {
-  "updated": "2026-11-06T12:00:00+11:00",
+  "updated": "2026-11-06T14:00:00+11:00",
   "attempts": [
     { "id": "e001", "athlete": "ryan-mcc", "time_s": 257, "date": "2026-11-05", "note": "" },
-    { "id": "e002", "athlete": "ryan-mcp", "time_s": 235, "date": "2026-11-05", "note": "" }
+    { "id": "e002", "athlete": "ryan-mcp", "time_s": 235, "date": "2026-11-05", "note": "" },
+    { "id": "e003", "athlete": "ned", "time_s": 275, "date": "2026-11-06", "note": "" }
   ]
 }
